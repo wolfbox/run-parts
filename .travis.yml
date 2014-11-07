@@ -1,0 +1,13 @@
+language: c
+
+before_install:
+    - sudo apt-get update -qq
+
+install:
+    - sudo apt-get install -y dash bash posh perl
+
+script:
+    - make
+    - ./test.sh dash
+    - ./test.sh bash
+    - ./test.sh posh
