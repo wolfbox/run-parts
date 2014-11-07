@@ -4,7 +4,11 @@ before_install:
     - sudo apt-get update -qq
 
 install:
-    - sudo apt-get install -y dash bash posh perl
+    - sudo apt-get install -y dash bash perl
+    - curl -LO ftp://ftp.debian.org/debian/pool/main/p/posh/posh_0.12.3.tar.xz
+    - tar -xf posh_0.12.3.tar.xz
+    - cd posh-0.12.3 && ./configure --prefix=/usr && make && sudo make install
+    - cd ..
 
 script:
     - make
