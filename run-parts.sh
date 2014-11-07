@@ -127,6 +127,7 @@ for arg in "$@"; do
 	case "${parsemode}" in
 		"directory" )
 			dir="${arg}"
+			parsemode="done"
 			;;
 		"umask" )
 			umask="${arg}"
