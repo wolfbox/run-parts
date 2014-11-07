@@ -16,6 +16,7 @@ new_session="off"
 regex="${DEFAULT_REGEX}"
 umask="022"
 dir=""
+args=""
 
 # Starts with a comma to ease searching
 ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
@@ -26,8 +27,9 @@ parsemode="run"
 # Avoid killing a child script if run-parts is killed
 run_isolation() {
 	local command="${1}"
+	shift 1
 
-	( "${command}" ) &
+	( "${command}" $@ ) &
 	local child_pid=$!
 	wait "${child_pid}"
 	return $?
@@ -45,6 +47,10 @@ may_fail() {
 	set -e
 }
 
+add_argument() {
+	args="${args} ${1}"
+}
+
 show_version() {
 	echo "run-parts ${VERSION}"
 }
@@ -58,6 +64,7 @@ show_help() {
 	echo "    --new-session"
 	echo "    --regex=RE"
 	echo "    -u, --umask=UMASK"
+	echo "    -a, --arg=ARGUMENT"
 	echo "    --ignore-suffixes=SUFFIX1[,SUFFIX2,...]"
 	echo "    -h, --help"
 	echo "    -V, --version"
@@ -105,6 +112,12 @@ dispatch_parse() {
 		--umask=* )
 			umask=$(parse_long_argument "${arg}")
 			;;
+		-a | --arg )
+			parsemode="arg"
+			;;
+		--arg=* )
+			add_argument "$(parse_long_argument "${arg}")"
+			;;
 		-- )
 			parsemode="directory"
 			;;
@@ -128,6 +141,10 @@ for arg in "$@"; do
 		"directory" )
 			dir="${arg}"
 			parsemode="done"
+			;;
+		"arg" )
+			add_argument "${arg}"
+			parsemode="run"
 			;;
 		"umask" )
 			umask="${arg}"
@@ -199,9 +216,9 @@ for file in ${dir}/*; do
 		fi
 
 		if [ "${new_session}" = "on" ]; then
-			may_fail result run_isolation "${file}"
+			may_fail result run_isolation "${file}" ${args}
 		else
-			may_fail result "${file}"
+			may_fail result "${file}" ${args}
 		fi
 
 		if [ "${result}" -ne 0 ]; then

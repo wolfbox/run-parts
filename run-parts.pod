@@ -39,6 +39,11 @@ Only run those programs matching a regular expression.
 
 Set the umask for the scripts.
 
+=item B<-a> I<ARGUMENT>, B<--arg=>I<ARGUMENT>
+
+Provide an argument to be given to each program. This option may be provided
+multiple times.
+
 =item B<--ignore-suffixes=>I<SUFFIX1>,[I<SUFFIX2>,...]
 
 Ignore any files ending with any entries in the given comma-delimited list of
