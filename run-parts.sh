@@ -21,7 +21,7 @@ dir=""
 # Starts with a comma to ease searching
 ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
 
-# One of "run", "directory", "umask", "regex", or "arg"
+# One of "run", "directory", "umask", "regex", "arg", or "done"
 parsemode="run"
 
 may_fail() {
@@ -102,10 +102,14 @@ dispatch_parse() {
 		-- )
 			parsemode="directory"
 			;;
-		* )
+		-* )
 			echo "Unknown argument ${arg}"
 			show_help
 			exit 1
+			;;
+		* )
+			dir="${arg}"
+			parsemode="done"
 			;;
 	esac
 }
@@ -128,6 +132,11 @@ for arg in $@; do
 			;;
 		"run" )
 			dispatch_parse "${arg}"
+			;;
+		"done" )
+			echo "No arguments allowed after directory name ${dir}"
+			show_help
+			exit 1
 			;;
 		* )
 			echo "Unknown state ${parsemode}"
