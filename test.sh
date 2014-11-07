@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+SH=${1:-/bin/sh}
+
 assert_eq() {
 	if [ ! "${1}" = "${2}" ]; then
 		echo "Failed: ${1} != ${2}"
@@ -9,12 +11,12 @@ assert_eq() {
 }
 
 # Test argument handling
-val="$(./run-parts.sh -a arg_1 --arg=arg_2 --regex=print_args.sh ./tests)"
+val="$(${SH} run-parts.sh -a arg_1 --arg=arg_2 --regex=print_args.sh ./tests)"
 assert_eq "${val}" "arg_1
 arg_2"
 
 # Test regex reset, and scripts with spaces
-val="$(./run-parts.sh --regex="" --list ./tests | sort)"
+val="$(${SH} run-parts.sh --regex="" --list ./tests | sort)"
 assert_eq "${val}" "check_umask.sh
 denied_by_regex%.sh
 fail.sh
@@ -24,28 +26,28 @@ not_exec.sh
 print_args.sh"
 
 # Test the default regex, excluding non-scripts
-val="$(./run-parts.sh --test ./tests | sort)"
+val="$(${SH} run-parts.sh --test ./tests | sort)"
 assert_eq "${val}" "check_umask.sh
 fail.sh
 foo.sh
 print_args.sh"
 
 # Test the prohibited suffix setter
-val="$(./run-parts.sh --test --ignore-suffixes=.sh ./tests | sort)"
+val="$(${SH} run-parts.sh --test --ignore-suffixes=.sh ./tests | sort)"
 assert_eq "${val}" "foo.rpmsave"
 
 # Test --exit-on-error
-./run-parts.sh --exit-on-error -- tests 2>&1 > /dev/null
+${SH} run-parts.sh --exit-on-error -- tests 2>&1 > /dev/null
 assert_eq "$?" "1"
 
 # Test verbose mode
-val="$(./run-parts.sh -v --regex=foo.sh -- tests 2>&1)"
+val="$(${SH} run-parts.sh -v --regex=foo.sh -- tests 2>&1)"
 assert_eq "${val}" "foo.sh
 foo"
 
 # Test an empty directory
 mkdir tests/empty || true
 rm tests/empty/* || true
-val="$(./run-parts.sh --list --regex="" -- tests/empty)"
+val="$(${SH} run-parts.sh --list --regex="" -- tests/empty)"
 assert_eq "${val}" ""
 rmdir tests/empty
