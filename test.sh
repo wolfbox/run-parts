@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -u
 
 SH=${1:-/bin/sh}
 
@@ -47,7 +47,7 @@ foo"
 
 # Test an empty directory
 mkdir tests/empty || true
-rm tests/empty/* || true
+rm tests/empty/* 2>/dev/null || true
 val="$(${SH} run-parts.sh --list --regex="" -- tests/empty)"
 assert_eq "${val}" ""
 rmdir tests/empty
