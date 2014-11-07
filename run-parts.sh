@@ -29,7 +29,7 @@ run_isolation() {
 	local command="${1}"
 	shift 1
 
-	( "${command}" $@ ) &
+	( "${command}" "$@" ) &
 	local child_pid=$!
 	wait "${child_pid}"
 	return $?
