@@ -21,7 +21,7 @@ args=""
 # Starts with a comma to ease searching
 ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
 
-# One of "run", "directory", "umask", "regex", "arg", or "done"
+# One of "run", "directory", "umask", "regex", "arg", "suffixes", or "done"
 parsemode="run"
 
 # Avoid killing a child script if run-parts is killed
@@ -49,6 +49,10 @@ may_fail() {
 
 add_argument() {
 	args="${args} ${1}"
+}
+
+set_ignore_suffixes() {
+	ignore_suffixes=",${1},"
 }
 
 show_version() {
@@ -118,6 +122,12 @@ dispatch_parse() {
 		--arg=* )
 			add_argument "$(parse_long_argument "${arg}")"
 			;;
+		--ignore-suffixes )
+			parsemode="suffixes"
+			;;
+		--ignore-suffixes=* )
+			set_ignore_suffixes "$(parse_long_argument "${arg}")"
+			;;
 		-- )
 			parsemode="directory"
 			;;
@@ -148,6 +158,10 @@ for arg in "$@"; do
 			;;
 		"umask" )
 			umask="${arg}"
+			parsemode="run"
+			;;
+		"suffixes" )
+			ignore_suffixes="$(set_ignore_suffixes "${arg}")"
 			parsemode="run"
 			;;
 		"regex" )
