@@ -11,7 +11,6 @@ LANANA_REGEX='^[a-z0-9]+$'
 mode="run"
 
 verbose="off"
-reverse="off"
 exit_on_error="off"
 new_session="off"
 regex="${DEFAULT_REGEX}"
@@ -55,8 +54,6 @@ show_help() {
 	echo "    --test"
 	echo "    --list"
 	echo "    -v, --verbose"
-	echo "    --report"
-	echo "    --reverse"
 	echo "    --exit-on-error"
 	echo "    --new-session"
 	echo "    --regex=RE"
@@ -79,14 +76,8 @@ dispatch_parse() {
 		--list )
 			mode="list"
 			;;
-		--report )
-			verbose="report"
-			;;
 		-v | --verbose )
 			verbose="verbose"
-			;;
-		--reverse )
-			reverse="on"
 			;;
 		--exit-on-error )
 			exit_on_error="on"
