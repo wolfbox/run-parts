@@ -68,7 +68,7 @@ show_help() {
 
 parse_long_argument() {
 	local input="${1}"
-	echo $(echo "${input}" | sed "s:--[a-z_\-]\+=::" -)
+	echo "${input}" | sed "s:--[a-z_\-]\+=::" -
 }
 
 dispatch_parse() {
@@ -130,7 +130,7 @@ dispatch_parse() {
 }
 
 gotarg="no"
-for arg in $@; do
+for arg in "$@"; do
 	gotarg="yes"
 
 	case "${parsemode}" in
@@ -212,8 +212,8 @@ for file in ${dir}/*; do
 			may_fail result "${file}"
 		fi
 
-		if [ ${result} -ne 0 ]; then
-			if [ ${exit_on_error} = "on" ]; then
+		if [ "${result}" -ne 0 ]; then
+			if [ "${exit_on_error}" = "on" ]; then
 				echo "Script ${file} failed"
 				exit 1
 			else
