@@ -1,4 +1,6 @@
 #!/bin/sh
+set -eu
+
 assert_eq() {
 	if [ ! "${1}" = "${2}" ]; then
 		echo "Failed: ${1} != ${2}"
@@ -21,16 +23,15 @@ have space.sh
 not_exec.sh
 print_args.sh"
 
-# Test the default regex
-val="$(./run-parts.sh --list ./tests | sort)"
+# Test the default regex, excluding non-scripts
+val="$(./run-parts.sh --test ./tests | sort)"
 assert_eq "${val}" "check_umask.sh
 fail.sh
 foo.sh
-not_exec.sh
 print_args.sh"
 
 # Test the prohibited suffix setter
-val="$(./run-parts.sh --list --ignore-suffixes=.sh ./tests | sort)"
+val="$(./run-parts.sh --test --ignore-suffixes=.sh ./tests | sort)"
 assert_eq "${val}" "foo.rpmsave"
 
 # Test --exit-on-error
@@ -41,3 +42,10 @@ assert_eq "$?" "1"
 val="$(./run-parts.sh -v --regex=foo.sh -- tests 2>&1)"
 assert_eq "${val}" "foo.sh
 foo"
+
+# Test an empty directory
+mkdir tests/empty || true
+rm tests/empty/* || true
+val="$(./run-parts.sh --list --regex="" -- tests/empty)"
+assert_eq "${val}" ""
+rmdir tests/empty

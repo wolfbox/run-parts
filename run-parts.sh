@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 COMMAND="${0}"
 VERSION="0.0"
@@ -204,6 +204,12 @@ fi
 umask "${umask}"
 
 for file in ${dir}/*; do
+	# If the directory contains no contents, the glob will fail and our file
+	# will be unexpanded. Detect this.
+	if [ ! -e "${file}" ]; then
+		continue
+	fi
+
 	if [ ! "${mode}" = "list" ]; then
 		if [ ! -x "${file}" ] || [ -d "${file}" ]; then
 			continue
