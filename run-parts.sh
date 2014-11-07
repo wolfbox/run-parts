@@ -24,12 +24,25 @@ ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
 # One of "run", "directory", "umask", "regex", "arg", or "done"
 parsemode="run"
 
-may_fail() {
+# Avoid killing a child script if run-parts is killed
+run_isolation() {
 	local command="${1}"
-	local outvar="${2}"
+
+	( "${1}" ) &
+	local child_pid=$!
+	wait ${child_pid}
+	return $?
+}
+
+# If a command fails, avoid letting run-parts die. Store the return status
+# of command in outvar
+may_fail() {
+	local outvar="${1}"
+	#local command="${2}"
+	shift 1
 
 	set +e
-	"${command}"
+	"$@"
 	eval "${outvar}"=$?
 	set -e
 }
@@ -78,6 +91,9 @@ dispatch_parse() {
 			;;
 		--exit-on-error )
 			exit_on_error="on"
+			;;
+		--new-session )
+			new_session="on"
 			;;
 		-h | --help )
 			show_help
@@ -187,7 +203,11 @@ for file in ${dir}/*; do
 	fi
 
 	if [ "${mode}" = "run" ]; then
-		may_fail "${file}" result
+		if [ "${new_session}" = "on" ]; then
+			may_fail result run_isolation "${file}"
+		else
+			may_fail result "${file}"
+		fi
 
 		if [ ${result} -ne 0 ]; then
 			if [ ${exit_on_error} = "on" ]; then
