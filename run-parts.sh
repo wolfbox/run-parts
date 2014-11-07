@@ -4,8 +4,8 @@ set -e
 COMMAND="${0}"
 VERSION="0.0"
 
-DEFAULT_REGEX="^[a-zA-Z0-9_\-\.]+$"
-LANANA_REGEX="^[a-z0-9]+$"
+DEFAULT_REGEX='^[a-zA-Z0-9_\-\.]+$'
+LANANA_REGEX='^[a-z0-9]+$'
 
 # One of "run", "list", and "report"
 mode="run"
@@ -21,7 +21,7 @@ dir=""
 # Starts with a comma to ease searching
 ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
 
-# One of "run", "directory", "umask", or "arg"
+# One of "run", "directory", "umask", "regex", or "arg"
 parsemode="run"
 
 may_fail() {
@@ -87,10 +87,13 @@ dispatch_parse() {
 			show_version
 			exit 0
 			;;
+		--regex )
+			parsemode="regex"
+			;;
 		--regex=* )
 			regex=$(parse_long_argument "${arg}")
 			;;
-		-u)
+		-u | --umask )
 			parsemode="umask"
 			;;
 		--umask=* )
@@ -117,6 +120,10 @@ for arg in $@; do
 			;;
 		"umask" )
 			umask="${arg}"
+			parsemode="run"
+			;;
+		"regex" )
+			regex="${arg}"
 			parsemode="run"
 			;;
 		"run" )
@@ -161,9 +168,11 @@ for file in ${dir}/*; do
 		continue
 	fi
 
-	# Match our filter regex
-	if echo "${filename}" | grep -qvE "${regex}"; then
-		continue
+	# Match our filter regex, if we have one
+	if [ ! -z "${regex}" ]; then
+		if echo "${filename}" | grep -qvE "${regex}"; then
+			continue
+		fi
 	fi
 
 	if [ "${mode}" = "run" ]; then
