@@ -28,9 +28,9 @@ parsemode="run"
 run_isolation() {
 	local command="${1}"
 
-	( "${1}" ) &
+	( "${command}" ) &
 	local child_pid=$!
-	wait ${child_pid}
+	wait "${child_pid}"
 	return $?
 }
 
@@ -38,7 +38,6 @@ run_isolation() {
 # of command in outvar
 may_fail() {
 	local outvar="${1}"
-	#local command="${2}"
 	shift 1
 
 	set +e
@@ -203,6 +202,10 @@ for file in ${dir}/*; do
 	fi
 
 	if [ "${mode}" = "run" ]; then
+		if [ "${verbose}" = "verbose" ]; then
+			echo "${filename}" 1>&2
+		fi
+
 		if [ "${new_session}" = "on" ]; then
 			may_fail result run_isolation "${file}"
 		else
