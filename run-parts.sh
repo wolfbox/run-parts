@@ -195,5 +195,7 @@ for file in ${dir}/*; do
 				continue
 			fi
 		fi
+	elif [ "${mode}" = "test" ]; then
+		echo "${filename}"
 	fi
 done
