@@ -1,1 +1,116 @@
-run-parts.pod
+=for HTML <a href='https://travis-ci.org/wolfbox/run-parts'><img src='https://travis-ci.org/wolfbox/run-parts.svg'></a>
+
+=head1 NAME
+
+run-parts - run executable files and scripts in a directory.
+
+=head1 SYNOPSIS
+
+B<< run-parts >> [I<OPTIONS>] [--] I<DIRECTORY>
+
+=head1 DESCRIPTION
+
+=over 4
+
+=item B<--test>
+
+Print program names, but don't run them.
+
+=item B<--list>
+
+List all matching files, including non-executables, but don't run anything.
+
+=item B<-v>, B<--verbose>
+
+Print the name of each program before running it.
+
+=item B<--exit-on-error>
+
+If a program fails, terminate early.
+
+=item B<--new-session>
+
+Run each program in a new process, so if B<run-parts> is terminated, the
+programs in progress will continue.
+
+=item B<--regex=>I<REGEX>
+
+Only run those programs matching a regular expression.
+
+=item B<-u> I<UMASK>, B<--umask=>I<UMASK>
+
+Set the umask for the scripts.
+
+=item B<-a> I<ARGUMENT>, B<--arg=>I<ARGUMENT>
+
+Provide an argument to be given to each program. This option may be provided
+multiple times.
+
+=item B<--ignore-suffixes=>I<SUFFIX1>,[I<SUFFIX2>,...]
+
+Ignore any files ending with any entries in the given comma-delimited list of
+suffixes.
+
+=item B<-h>, B<--help>
+
+Show a list of options.
+
+=item B<-V>, B<--version>
+
+Show version information.
+
+=back
+
+=head1 HISTORY
+
+The run-parts command is an ad-hoc unstandardized tool with wildly varying
+implementations. The main two are the following:
+
+=over 4
+
+=item Red Hat
+
+Implemented in bash, has a hard-coded list of prohibited suffixes, and only
+implements the B<--list> option.
+
+=item Debian/Ubuntu
+
+More commonly used, this implementation is in C, and provides many more
+features.
+
+=back
+
+Neither implementation is really appropriate for general-purpose usage. This
+implementation is written for the L<Wolf Box|https://github.com/wolfbox/> Linux
+project, and is intended to entirely subsume the features of the above two,
+while working in portable POSIX shell.
+
+=head1 AUTHOR
+
+L<Andrew Aldridge|http://foxquill.com>
+
+=head1 COPYRIGHT
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Andrew Aldridge <i80and@foxquill.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+=cut
