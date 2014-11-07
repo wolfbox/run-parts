@@ -7,21 +7,21 @@ VERSION="0.0"
 DEFAULT_REGEX="[a-z0-9_\-]"
 
 # One of "run", "list", and "report"
-_mode="run"
+mode="run"
 
-_verbose="off"
-_reverse="off"
-_exit_on_error="off"
-_new_session="off"
-_regex=""
-_umask="022"
-_dir=""
+verbose="off"
+reverse="off"
+exit_on_error="off"
+new_session="off"
+regex=""
+umask="022"
+dir=""
 
 # Starts with a comma to ease searching
-_ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
+ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
 
 # One of "run", "directory", "umask", or "arg"
-_parse_mode="run"
+parsemode="run"
 
 may_fail() {
 	set +e
@@ -51,24 +51,24 @@ show_help() {
 }
 
 parse_long_argument() {
-	local _name="${1}"
-	local _input="${2}"
-	echo $(echo "${_input}" | sed "s:${_name}=::" -)
+	local name="${1}"
+	local input="${2}"
+	echo $(echo "${input}" | sed "s:${name}=::" -)
 }
 
 dispatch_parse() {
 	if [ ${arg} = "--test" ]; then
-		_mode="test"
+		mode="test"
 	elif [ ${arg} = "--list" ]; then
-		_mode="list"
+		mode="list"
 	elif [ ${arg} = "--report" ]; then
-		_verbose="report"
+		verbose="report"
 	elif [ ${arg} = "-v" ] || [ ${arg} = "--verbose" ]; then
-		_verbose="verbose"
+		verbose="verbose"
 	elif [ ${arg} = "--reverse" ]; then
-		_reverse="on"
+		reverse="on"
 	elif [ ${arg} = "--exit-on-error" ]; then
-		_exit_on_error="on"
+		exit_on_error="on"
 	elif [ ${arg} = "--new-session" ]; then
 		_new_session="on"
 	elif [ ${arg} = "-h" ] || [ ${arg} = "--help" ]; then
@@ -78,18 +78,18 @@ dispatch_parse() {
 		show_version
 		exit 0
 	elif [ ${arg} = "--" ]; then
-		_parse_mode="directory"
+		parsemode="directory"
 	fi
 	
-	_regex=$(parse_long_argument "--regex" "${arg}")
+	regex=$(parse_long_argument "--regex" "${arg}")
 }
 
-_gotarg="no"
+gotarg="no"
 for arg in $@; do
-	_gotarg="yes"
+	gotarg="yes"
 
-	if [ ${_parse_mode} = "directory" ]; then
-		_dir="${arg}"
+	if [ ${parsemode} = "directory" ]; then
+		dir="${arg}"
 	else
 		dispatch_parse "${arg}"
 	fi
@@ -97,39 +97,39 @@ for arg in $@; do
 	shift 1
 done
 
-if [ ${_gotarg} = "no" ]; then
+if [ ${gotarg} = "no" ]; then
 	show_help
 	exit 0
 fi
 
-if [ "${_dir}" = "" ]; then
+if [ "${dir}" = "" ]; then
 	echo "No directory provided"
 	show_help
 	exit 1
 fi
 
-if [ ! -d "${_dir}" ] || [ ! -x "${_dir}" ]; then
-	echo "Could not list contents of ${_dir}"
+if [ ! -d "${dir}" ] || [ ! -x "${dir}" ]; then
+	echo "Could not list contents of ${dir}"
 	exit 1
 fi
 
-for file in ${_dir}/*; do
+for file in ${dir}/*; do
 	if [ ! -x "${file}" ] || [ -d "${file}" ]; then
 		continue
 	fi
 
 	# Check our suffix ignore list
-	_filename=$(basename "${file}")
-	_extension="${_filename##*.}"
-	if echo "${_ignore_suffixes}" | grep -qF ",.${_extension},"; then
+	filename=$(basename "${file}")
+	extension="${filename##*.}"
+	if echo "${ignore_suffixes}" | grep -qF ",.${extension},"; then
 		continue
 	fi
 	
-	if [ "${_mode}" = "run" ]; then
+	if [ "${mode}" = "run" ]; then
 		may_fail "${file}" result
 
 		if [ ${result} -ne 0 ]; then
-			if [ ${_exit_on_error} = "on" ]; then
+			if [ ${exit_on_error} = "on" ]; then
 				echo "Script ${file} failed"
 				exit 1
 			else
