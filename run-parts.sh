@@ -166,8 +166,10 @@ fi
 umask "${umask}"
 
 for file in ${dir}/*; do
-	if [ ! -x "${file}" ] || [ -d "${file}" ]; then
-		continue
+	if [ ! "${mode}" = "list" ]; then
+		if [ ! -x "${file}" ] || [ -d "${file}" ]; then
+			continue
+		fi
 	fi
 
 	# Check our suffix ignore list
@@ -195,7 +197,7 @@ for file in ${dir}/*; do
 				continue
 			fi
 		fi
-	elif [ "${mode}" = "test" ]; then
+	elif [ "${mode}" = "test" ] || [ "${mode}" = "list" ]; then
 		echo "${filename}"
 	fi
 done
