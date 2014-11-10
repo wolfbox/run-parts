@@ -4,6 +4,11 @@ MANDIR=$(PREFIX)/share/man
 
 .PHONY: test clean
 
+all: README.pod run-parts.1
+
+run-parts.pod: LICENSE run-parts.pod.in
+	awk -v l="`cat LICENSE`" '{gsub(/@LICENSE@/,l)}1' run-parts.pod.in > $@
+
 run-parts.1: run-parts.pod
 	pod2man run-parts.pod --center="run-parts Manual" --release="run-parts" > run-parts.1
 
@@ -19,4 +24,4 @@ test:
 	./test.sh
 
 clean:
-	rm -f run-parts.1
+	rm -f run-parts.1 run-parts.pod
