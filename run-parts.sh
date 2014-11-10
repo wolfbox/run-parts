@@ -2,7 +2,7 @@
 set -eu
 
 COMMAND="${0}"
-VERSION="0.0"
+VERSION="0.1"
 
 DEFAULT_REGEX='^[a-zA-Z0-9_\-\.]+$'
 LANANA_REGEX='^[a-z0-9]+$'
