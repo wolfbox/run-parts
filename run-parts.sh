@@ -76,7 +76,7 @@ show_help() {
 
 parse_long_argument() {
 	local input="${1}"
-	echo "${input}" | sed "s:--[a-z_\-]\+=::" -
+	echo "${input}" | sed -Ee 's:--[a-z_\-]+=::'
 }
 
 dispatch_parse() {
