@@ -4,7 +4,7 @@ set -eu
 COMMAND="${0}"
 VERSION="0.2pre"
 
-DEFAULT_REGEX='^[a-zA-Z0-9_\-\.]+$'
+DEFAULT_REGEX='^[a-zA-Z0-9_\.-]+$'
 LANANA_REGEX='^[a-z0-9]+$'
 
 # One of "run", "list", and "report"

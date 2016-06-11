@@ -23,14 +23,16 @@ fail.sh
 foo.sh
 have space.sh
 not_exec.sh
-print_args.sh"
+print_args.sh
+with-dash.sh"
 
 # Test the default regex, excluding non-scripts
 val="$(${SH} run-parts.sh --test ./tests | sort)"
 assert_eq "${val}" "check_umask.sh
 fail.sh
 foo.sh
-print_args.sh"
+print_args.sh
+with-dash.sh"
 
 # Test the prohibited suffix setter
 val="$(${SH} run-parts.sh --test --ignore-suffixes=.sh ./tests | sort)"
