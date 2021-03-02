@@ -53,3 +53,18 @@ rm tests/empty/* 2>/dev/null || true
 val="$(${SH} run-parts.sh --list --regex="" -- tests/empty)"
 assert_eq "${val}" ""
 rmdir tests/empty
+
+# Test --lsbsysinit
+rm -rf tests/lsb || true
+mkdir tests/lsb || true
+for name in "good" "invalid1.dpkg-new" "Good.2.Not" "invalid+symbol" "10-very-good" "10-ALSO-GOOD"
+do
+  touch "tests/lsb/${name}"
+  chmod 755 "tests/lsb/${name}"
+done
+val="$(${SH} run-parts.sh --lsbsysinit --test ./tests/lsb | sort)"
+rm -rf tests/lsb || true
+
+assert_eq "${val}" "10-ALSO-GOOD
+10-very-good
+good"

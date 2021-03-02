@@ -2,10 +2,11 @@
 set -eu
 
 COMMAND="${0}"
-VERSION="0.2pre"
+VERSION="0.3pre"
 
 DEFAULT_REGEX='^[a-zA-Z0-9_\.-]+$'
 LANANA_REGEX='^[a-z0-9]+$'
+LSB_REGEX='^(([a-z0-9]+)|(_?([a-z0-9_.]+-)+[a-z0-9]+)|([a-zA-Z0-9_-]+))$'
 
 # One of "run", "list", and "report"
 mode="run"
@@ -18,8 +19,14 @@ umask="022"
 dir=""
 args=""
 
+stdin="off"
+lsbsysinit="off"
+
 # Starts with a comma to ease searching
 ignore_suffixes=",.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
+
+# Suffixes to ignore in lsb mode
+lsb_ignore_suffixes=",.dpkg-old,.dpkg-new,.dpkg-tmp,.dpkg-dist,.rpmsave,.rpmorig,.rpmnew,.swp,.cfsaved,"
 
 # One of "run", "directory", "umask", "regex", "arg", "suffixes", or "done"
 parsemode="run"
@@ -92,6 +99,12 @@ dispatch_parse() {
 			;;
 		--exit-on-error )
 			exit_on_error="on"
+			;;
+		--stdin)
+				stdin="on"
+			;;
+		--lsbsysinit)
+			lsbsysinit="on"
 			;;
 		--new-session )
 			new_session="on"
@@ -199,6 +212,15 @@ fi
 if [ ! -d "${dir}" ] || [ ! -x "${dir}" ]; then
 	echo "Could not list contents of ${dir}"
 	exit 1
+fi
+
+if [ ${stdin} = "on" ]; then
+	echo "WARNING: Option --stdin is not yet implemented. Ignoring."
+fi
+
+if [ ${lsbsysinit} = "on" ]; then
+	regex="${LSB_REGEX}"
+	ignore_suffixes="${lsb_ignore_suffixes}"
 fi
 
 umask "${umask}"
